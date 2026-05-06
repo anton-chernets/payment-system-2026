@@ -1,3 +1,4 @@
+/.composer
 /node_modules
 /public/build
 /public/hot
