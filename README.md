@@ -94,6 +94,68 @@ public function index(): JsonResponse
 
 ---
 
+## Laravel Horizon
+
+Queue monitoring dashboard powered by Redis.
+
+| URL | Description |
+|-----|-------------|
+| http://localhost:8080/horizon | Horizon Dashboard |
+
+Horizon runs as a separate Docker service (`brazy_horizon`) and starts automatically with `docker compose up`.
+
+```bash
+# Check Horizon status
+docker compose exec app php artisan horizon:status
+
+# Pause / resume queue processing
+docker compose exec app php artisan horizon:pause
+docker compose exec app php artisan horizon:continue
+
+# View logs
+docker compose logs -f horizon
+```
+
+---
+
+## Laravel Tinker
+
+Interactive REPL for exploring the application from the command line.
+
+```bash
+docker compose exec app php artisan tinker
+```
+
+Examples:
+```php
+>>> User::count()
+>>> User::factory()->create()
+>>> dispatch(new App\Jobs\ExampleJob())
+```
+
+---
+
+## IDE Helper
+
+The project includes [barryvdh/laravel-ide-helper](https://github.com/barryvdh/laravel-ide-helper) for better IDE autocompletion.
+
+Generated files (committed to the repo):
+
+| File | Purpose |
+|------|---------|
+| `_ide_helper.php` | Facade autocompletion |
+| `_ide_helper_models.php` | Model PHPDoc |
+| `.phpstorm.meta.php` | PhpStorm metadata |
+
+**Regenerate after adding models or facades:**
+```bash
+docker compose exec app php artisan ide-helper:generate
+docker compose exec app php artisan ide-helper:models --nowrite
+docker compose exec app php artisan ide-helper:meta
+```
+
+---
+
 ## Useful Commands
 
 ```bash
