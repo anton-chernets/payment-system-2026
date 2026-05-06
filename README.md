@@ -69,7 +69,9 @@ The project uses [l5-swagger](https://github.com/DarkaOnLine/L5-Swagger) based o
 | http://localhost:8080/api/documentation | Swagger UI |
 | http://localhost:8080/api/documentation.json | OpenAPI JSON schema |
 
-**Regenerate docs after adding annotations:**
+> **Note:** `storage/api-docs/api-docs.json` is excluded from git.
+> You must regenerate it locally after cloning or after any annotation changes:
+
 ```bash
 docker compose exec app php artisan l5-swagger:generate
 ```
