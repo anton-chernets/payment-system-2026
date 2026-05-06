@@ -221,6 +221,59 @@ docker compose exec app php artisan make:activity CreatePaymentActivity
 
 ---
 
+## Testing
+
+### Test database setup
+
+Tests run against a separate PostgreSQL database `brazy_test`.
+
+**1. Create the test database (once after first clone):**
+```bash
+docker compose exec db psql -U brazy -d brazy -c "CREATE DATABASE brazy_test;"
+```
+
+**2. Add test credentials to `.env`** (not committed):
+```
+DB_TEST_HOST=db
+DB_TEST_PORT=5432
+DB_TEST_DATABASE=brazy_test
+DB_TEST_USERNAME=brazy
+DB_TEST_PASSWORD=secret
+```
+
+> Test DB connection is configured in `phpunit.xml` — values there override `.env` during test runs.
+
+**3. Run tests:**
+```bash
+# All tests
+docker compose exec app php artisan test
+
+# With coverage
+docker compose exec app php artisan test --coverage
+
+# Single suite
+docker compose exec app php artisan test --testsuite=Unit
+docker compose exec app php artisan test --testsuite=Feature
+
+# Single file
+docker compose exec app php artisan test tests/Feature/Payment/CreatePaymentTest.php
+```
+
+### Test structure
+
+```
+tests/
+  Unit/
+    Payment/
+      UpdatePaymentStatusActivityTest  — DB status update logic
+  Feature/
+    Payment/
+      CreatePaymentTest   — POST /api/payments (mocked providers)
+      CallbackTest        — POST /api/callbacks/{provider} (mocked providers)
+```
+
+---
+
 ## Useful Commands
 
 ```bash
