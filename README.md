@@ -60,6 +60,40 @@ Laravel source code is located in the `src/` directory, Docker configs are in `d
 
 ---
 
+## API Documentation (Swagger)
+
+The project uses [l5-swagger](https://github.com/DarkaOnLine/L5-Swagger) based on OpenAPI 3.0.
+
+| URL | Description |
+|-----|-------------|
+| http://localhost:8080/api/documentation | Swagger UI |
+| http://localhost:8080/api/documentation.json | OpenAPI JSON schema |
+
+**Regenerate docs after adding annotations:**
+```bash
+docker compose exec app php artisan l5-swagger:generate
+```
+
+**Adding annotations to a controller:**
+```php
+use OpenApi\Attributes as OA;
+
+#[OA\Get(
+    path: '/example',
+    summary: 'Example endpoint',
+    tags: ['Example'],
+    responses: [
+        new OA\Response(response: 200, description: 'OK')
+    ]
+)]
+public function index(): JsonResponse
+{
+    ...
+}
+```
+
+---
+
 ## Useful Commands
 
 ```bash
