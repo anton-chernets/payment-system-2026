@@ -156,6 +156,69 @@ docker compose exec app php artisan ide-helper:meta
 
 ---
 
+## Laravel Workflow — Payment Processing
+
+Durable workflow engine powering the payment lifecycle for PayGateA and PayGateB.
+
+### Architecture
+
+The system provides a unified API over multiple payment providers. Provider-specific logic is isolated behind a common interface — adding a new provider (PayGateC, etc.) requires no changes to the core flow.
+
+```
+PaymentController
+       │
+       ▼
+PaymentProviderFactory  ──resolves──►  PayGateAProvider
+                                       PayGateBProvider
+                                       ...
+       │
+       ▼
+PaymentWorkflow (laravel-workflow)
+       │
+       ├── CreatePaymentActivity   — calls provider API, persists payment
+       └── HandleCallbackActivity  — verifies & processes provider callback
+```
+
+### Payment flows
+
+**1. Create payment**
+```
+POST /api/payments
+{
+  "provider": "paygate_a",  // or "paygate_b"
+  "amount": 100.00,
+  "currency": "USD",
+  "order_id": "order-123"
+}
+```
+
+**2. Handle provider callback**
+```
+POST /api/payments/callback/{provider}
+```
+
+### Workflow commands
+```bash
+# Create a new workflow
+docker compose exec app php artisan make:workflow PaymentWorkflow
+
+# Create a new activity
+docker compose exec app php artisan make:activity CreatePaymentActivity
+
+# Monitor running workflows via Horizon
+# http://localhost:8080/horizon
+```
+
+### Adding a new provider
+
+1. Create `app/Payment/Providers/PayGateCProvider.php` implementing `PaymentProviderInterface`
+2. Register it in `PaymentProviderFactory`
+3. No changes needed in controllers, workflows or activities
+
+> Workflows require Horizon (Redis queue) to be running.
+
+---
+
 ## Useful Commands
 
 ```bash
