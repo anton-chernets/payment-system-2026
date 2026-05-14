@@ -4,16 +4,16 @@ namespace App\PaymentSystem\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\PaymentSystem\Contracts\PaymentProviderInterface;
+use App\PaymentSystem\Repositories\PaymentProviderRepository;
 use App\PaymentSystem\Repositories\PaymentRepository;
 use App\PaymentSystem\Requests\CallbackRequest;
-use App\PaymentSystem\Workflows\ProcessPaymentCallbackWorkflow;
 use Illuminate\Http\JsonResponse;
-use Workflow\WorkflowStub;
 
 class CallbackController extends Controller
 {
     public function __construct(
         private readonly PaymentProviderInterface $provider,
+        private readonly PaymentProviderRepository $providerRepository,
         private readonly PaymentRepository $paymentRepository,
     ) {}
 
@@ -21,7 +21,12 @@ class CallbackController extends Controller
     {
         $callbackDto = $this->provider->handleCallback($request->validated());
 
-        $payment = $this->paymentRepository->findForCallback($callbackDto->orderId, $callbackDto->transactionId);
+        $providerModel = $this->providerRepository->findBySlugOrFail($request->route('provider'));
+        $payment       = $this->paymentRepository->findForCallback(
+            $callbackDto->orderId,
+            $callbackDto->transactionId,
+            $providerModel,
+        );
 
         if (!$payment) {
             return response()->json(['error' => 'Payment not found'], 404);
@@ -33,9 +38,8 @@ class CallbackController extends Controller
             ], 422);
         }
 
-        $workflow = WorkflowStub::make(ProcessPaymentCallbackWorkflow::class);
-        $workflow->start($callbackDto);
+        $payment->update(['status' => $callbackDto->status->value]);
 
-        return response()->json(['success' => true]);
+        return response()->json($this->provider->callbackResponse());
     }
 }
