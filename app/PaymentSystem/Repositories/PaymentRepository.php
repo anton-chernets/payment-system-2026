@@ -54,7 +54,7 @@ class PaymentRepository
             'transaction_id' => $response->transactionId,
             'status'         => $response->status->value,
             'amount'         => (int) round($dto->amount * 100),
-            'redirect_url'   => url('/api/callbacks/' . str_replace('_', '-', $provider->slug)),
+            'redirect_url'   => $response->redirectUrl,
         ]);
     }
 }
