@@ -7,9 +7,7 @@ use App\PaymentSystem\Contracts\PaymentProviderInterface;
 use App\PaymentSystem\Repositories\PaymentProviderRepository;
 use App\PaymentSystem\Repositories\PaymentRepository;
 use App\PaymentSystem\Requests\CallbackRequest;
-use App\PaymentSystem\Workflows\ProcessPaymentCallbackWorkflow;
 use Illuminate\Http\JsonResponse;
-use Workflow\WorkflowStub;
 
 class CallbackController extends Controller
 {
@@ -40,9 +38,8 @@ class CallbackController extends Controller
             ], 422);
         }
 
-        $workflow = WorkflowStub::make(ProcessPaymentCallbackWorkflow::class);
-        $workflow->start($callbackDto);
+        $payment->update(['status' => $callbackDto->status->value]);
 
-        return response()->json(['success' => true]);
+        return response()->json($this->provider->callbackResponse());
     }
 }

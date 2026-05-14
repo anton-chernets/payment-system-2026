@@ -14,6 +14,8 @@ interface PaymentProviderInterface
 
     public function handleCallback(array $payload): CallbackPayloadDTO;
 
+    public function callbackResponse(): array;
+
     public function externalRequestRules(): array;
 
     public function parseExternalRequest(array $data): CreatePaymentDTO;

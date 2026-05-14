@@ -32,6 +32,11 @@ class PayGateAProvider implements PaymentProviderInterface
         return isset($payload['payment_id'], $payload['merchant_order_id'], $payload['status']);
     }
 
+    public function callbackResponse(): array
+    {
+        return ['success' => true];
+    }
+
     public function handleCallback(array $payload): CallbackPayloadDTO
     {
         return $this->mapper->fromCallback($payload);
