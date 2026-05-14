@@ -7,8 +7,6 @@ use App\PaymentSystem\DTO\CallbackPayloadDTO;
 use App\PaymentSystem\DTO\CreatePaymentDTO;
 use App\PaymentSystem\DTO\PaymentResponseDTO;
 use App\PaymentSystem\Mappers\PayGateAMapper;
-use Illuminate\Support\Str;
-
 class PayGateAProvider implements PaymentProviderInterface
 {
     public function __construct(private readonly PayGateAMapper $mapper) {}
@@ -18,7 +16,7 @@ class PayGateAProvider implements PaymentProviderInterface
         // stub: replace with real HTTP POST to /external/paygate-a/create
         $request = $this->mapper->toProviderRequest($dto);
 
-        $paymentId = (string) Str::uuid();
+        $paymentId = 'a-' . random_int(100000, 999999);
 
         $stubResponse = [
             'payment_id'  => $paymentId,
