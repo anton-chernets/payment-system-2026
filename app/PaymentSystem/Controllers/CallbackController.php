@@ -4,6 +4,7 @@ namespace App\PaymentSystem\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\PaymentSystem\Contracts\PaymentProviderInterface;
+use App\PaymentSystem\Repositories\PaymentProviderRepository;
 use App\PaymentSystem\Repositories\PaymentRepository;
 use App\PaymentSystem\Requests\CallbackRequest;
 use App\PaymentSystem\Workflows\ProcessPaymentCallbackWorkflow;
@@ -14,6 +15,7 @@ class CallbackController extends Controller
 {
     public function __construct(
         private readonly PaymentProviderInterface $provider,
+        private readonly PaymentProviderRepository $providerRepository,
         private readonly PaymentRepository $paymentRepository,
     ) {}
 
@@ -21,7 +23,12 @@ class CallbackController extends Controller
     {
         $callbackDto = $this->provider->handleCallback($request->validated());
 
-        $payment = $this->paymentRepository->findForCallback($callbackDto->orderId, $callbackDto->transactionId);
+        $providerModel = $this->providerRepository->findBySlugOrFail($request->route('provider'));
+        $payment       = $this->paymentRepository->findForCallback(
+            $callbackDto->orderId,
+            $callbackDto->transactionId,
+            $providerModel,
+        );
 
         if (!$payment) {
             return response()->json(['error' => 'Payment not found'], 404);

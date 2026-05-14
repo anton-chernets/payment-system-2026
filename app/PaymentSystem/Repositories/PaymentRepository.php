@@ -30,7 +30,7 @@ class PaymentRepository
         return Payment::where('transaction_id', $transactionId)->first();
     }
 
-    public function findForCallback(string $orderId, string $transactionId): ?Payment
+    public function findForCallback(string $orderId, string $transactionId, PaymentProvider $provider): ?Payment
     {
         if (!Str::isUuid($transactionId)) {
             return null;
@@ -38,6 +38,7 @@ class PaymentRepository
 
         return Payment::where('order_id', $orderId)
             ->where('transaction_id', $transactionId)
+            ->where('provider_id', $provider->id)
             ->first();
     }
 
