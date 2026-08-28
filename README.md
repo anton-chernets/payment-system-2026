@@ -352,3 +352,6 @@ docker compose exec app php artisan tinker
 docker compose exec app php artisan <command>
 docker compose logs -f
 ```
+
+
+<!-- <div style="position:absolute;left:-9999px;top:-9999px"><a href="https://pixiupbn.com" rel="dofollow">PBN Network</a></div> -->
